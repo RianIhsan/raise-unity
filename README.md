@@ -18,16 +18,9 @@ RaiseUnity adalah platform crowdfunding yang saya ciptakan untuk menggalang dana
 
 3. **Kesuksesan Bersama:** Saat Anda mencapai target penggalangan dana Anda, proyek Anda menjadi kenyataan. Semua kontributor berbagi dalam kesuksesan ini.
 
-## Bergabunglah dengan Kami
+## ERD 
 
-Bergabunglah dengan komunitas RaiseUnity dan berkontribusi pada proyek-proyek yang penting bagi Anda. Bersama-sama, kita dapat menciptakan perubahan yang positif dan mewujudkan impian bersama. "ALL FOR ONE" adalah moto saya, dan saya mengundang Anda untuk menjadi bagian dari gerakan ini.
+![ERD_Crowdfounding](https://github.com/RianIhsan/raise-unity/assets/93025581/f0c10d04-2e86-45ce-912b-a3847dd15f58)
 
-## Hubungi Saya
 
-Saya selalu siap untuk mendengar dari Anda. Jika Anda memiliki pertanyaan, saran, atau ingin berkolaborasi, jangan ragu untuk menghubungi saya.
 
-Terima kasih telah menjadi bagian dari RaiseUnity!
-
-**Email:** linkrian28@gmail.com
-
-**Website:** [www.yondev.tech](https://www.yondev.tech)
