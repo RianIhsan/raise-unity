@@ -38,7 +38,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	}
 	formatter := user.FormatUser(newUser, "eyawbidubawidlbalwdpa")
 
-	response := helper.APIResponse("Account has been registered", http.StatusCreated, "success", formatter)
+	response := helper.APIResponse("Berhasil Mendaftar, silahkan cek email untuk verifikasi OTP", http.StatusCreated, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -70,4 +70,24 @@ func (h *userHandler) Login(c *gin.Context) {
 	response := helper.APIResponse("Succesfully Loggedin", http.StatusOK, "succes", formatter)
 	c.JSON(http.StatusOK, response)
 
+}
+
+func (h *userHandler) VerifyEmail(c *gin.Context) {
+	var payload user.VerifyEmailPayload
+
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		response := helper.APIResponse("Invalid payload request", http.StatusUnprocessableEntity, "error", err.Error())
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	err := h.userService.VerifyEmail(payload.Email, payload.OTP)
+	if err != nil {
+		response := helper.APIResponse("Email verification failed", http.StatusUnprocessableEntity, "error", err.Error())
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	response := helper.APIResponse("Email verified successfully", http.StatusOK, "success", nil)
+	c.JSON(http.StatusOK, response)
 }

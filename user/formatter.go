@@ -19,3 +19,8 @@ func FormatUser(user User, token string) UserFormatter {
 
 	return formatter
 }
+
+type VerifyEmailPayload struct {
+	Email string `json:"email" binding:"required"`
+	OTP   string `json:"otp" binding:"required"`
+}

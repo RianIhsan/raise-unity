@@ -2,13 +2,19 @@ package user
 
 import (
 	"errors"
+	"time"
 
+	"github.com/RianIhsan/raise-unity/helper"
 	"github.com/alexedwards/argon2id"
 )
 
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
+	GetUserByEmail(email string) (User, error)        // Tambahkan metode GetUserByEmail
+	FindValidOTP(userID int, otp string) (OTP, error) // Tambahkan metode FindValidOTP
+	UpdateUser(user User) (User, error)               // Tambahkan metode UpdateUser
+	VerifyEmail(email string, otp string) error
 }
 
 type service struct {
@@ -41,6 +47,24 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 	if err != nil {
 		return newUser, errors.New("error saving user")
 	}
+
+	otp := helper.GenerateRandomOTP(6)
+
+	otpModel := OTP{
+		UserID:     newUser.ID,
+		OTP:        otp,
+		ExpiredOTP: time.Now().Add(2 * time.Minute).Unix(),
+	}
+
+	_, errOtp := s.repository.SaveOTP(otpModel)
+	if errOtp != nil {
+		return newUser, errors.New("error sending OTP")
+	}
+
+	err = helper.SendOTPByEmail(newUser.Email, otp)
+	if err != nil {
+		return newUser, errors.New("error sending OTP")
+	}
 	return newUser, nil
 }
 
@@ -55,6 +79,9 @@ func (s *service) Login(input LoginInput) (User, error) {
 	if user.ID == 0 {
 		return user, errors.New("no user found on that email")
 	}
+	if !user.IsVerified {
+		return user, errors.New("akun belum diverifikasi")
+	}
 	match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 	if err != nil {
 		return user, err
@@ -63,4 +90,62 @@ func (s *service) Login(input LoginInput) (User, error) {
 		return user, errors.New("password does not match")
 	}
 	return user, nil
+}
+
+func (s *service) VerifyEmail(email string, otp string) error {
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if user.ID == 0 {
+		return errors.New("no user found on that email")
+	}
+
+	otpModel, err := s.repository.FindValidOTP(user.ID, otp)
+	if err != nil {
+		return errors.New("invalid or expired OTP")
+	}
+
+	if otpModel.ID == 0 {
+		return errors.New("invalid or expired OTP")
+	}
+
+	user.IsVerified = true
+
+	_, errUpdate := s.repository.UpdateUser(user)
+	if errUpdate != nil {
+		return errors.New("error updating user")
+	}
+
+	errDeleteOTP := s.repository.DeleteOTP(otpModel)
+	if errDeleteOTP != nil {
+		return errors.New("error deleting OTP")
+	}
+
+	return nil
+}
+
+func (s *service) GetUserByEmail(email string) (User, error) {
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (s *service) FindValidOTP(userID int, otp string) (OTP, error) {
+	validOTP, err := s.repository.FindValidOTP(userID, otp)
+	if err != nil {
+		return validOTP, err
+	}
+	return validOTP, nil
+}
+
+func (s *service) UpdateUser(user User) (User, error) {
+	updatedUser, err := s.repository.UpdateUser(user)
+	if err != nil {
+		return updatedUser, err
+	}
+	return updatedUser, nil
 }

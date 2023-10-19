@@ -1,6 +1,15 @@
 package helper
 
-import "github.com/go-playground/validator/v10"
+import (
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
+	"github.com/wneessen/go-mail"
+)
 
 type response struct {
 	Meta meta        `json:"meta"`
@@ -36,4 +45,55 @@ func FormatValidationError(err error) []string {
 	}
 
 	return errors
+}
+
+func SendOTPByEmail(email, otp string) error {
+	err := godotenv.Load()
+	if err != nil {
+		return err
+	}
+
+	secret_user := os.Getenv("SMTP_USER")
+	secret_pass := os.Getenv("SMTP_PASS")
+	secret_port := os.Getenv("SMTP_PORT")
+
+	convPort, err := strconv.Atoi(secret_port)
+	if err != nil {
+		return err
+	}
+
+	m := mail.NewMsg()
+	if err := m.From(secret_user); err != nil {
+		return err
+	}
+	if err := m.To(email); err != nil {
+		return err
+	}
+	m.Subject("Verifikasi Email - RAISE UNITY")
+	m.SetBodyString(mail.TypeTextPlain, "Kode OTP anda adalah : "+otp)
+
+	c, err := mail.NewClient("smtp.gmail.com", mail.WithPort(convPort), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername("rianihsanardiansyah@gmail.com"), mail.WithPassword(secret_pass))
+	if err != nil {
+		return err
+	}
+	if err := c.DialAndSend(m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GenerateRandomOTP(otpLent int) string {
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+
+	const n = "0123456789"
+
+	otp := make([]byte, otpLent)
+	for i := range otp {
+		otp[i] = n[r.Intn(len(n))]
+	}
+
+	return string(otp)
+
 }
