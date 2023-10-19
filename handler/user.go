@@ -91,3 +91,35 @@ func (h *userHandler) VerifyEmail(c *gin.Context) {
 	response := helper.APIResponse("Email verified successfully", http.StatusOK, "success", nil)
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) ResendOTP(c *gin.Context) {
+	var input user.ResendOTPInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		errors := helper.FormatValidationError(err)
+		errMessage := gin.H{
+			"errors": errors,
+		}
+		response := helper.APIResponse("Resend OTP failed", http.StatusUnprocessableEntity, "error", errMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	otp, err := h.userService.ResendOTP(input.Email)
+	if err != nil {
+		response := helper.APIResponse("Resend OTP failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// Kirim ulang OTP ke email pengguna (gunakan metode sendOTPByEmail yang ada)
+	err = helper.SendOTPByEmail(input.Email, otp.OTP)
+	if err != nil {
+		response := helper.APIResponse("Error sending OTP", http.StatusInternalServerError, "error", nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	response := helper.APIResponse("OTP has been resent", http.StatusOK, "success", nil)
+	c.JSON(http.StatusOK, response)
+}

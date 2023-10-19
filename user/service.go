@@ -15,6 +15,7 @@ type Service interface {
 	FindValidOTP(userID int, otp string) (OTP, error) // Tambahkan metode FindValidOTP
 	UpdateUser(user User) (User, error)               // Tambahkan metode UpdateUser
 	VerifyEmail(email string, otp string) error
+	ResendOTP(email string) (OTP, error)
 }
 
 type service struct {
@@ -148,4 +149,35 @@ func (s *service) UpdateUser(user User) (User, error) {
 		return updatedUser, err
 	}
 	return updatedUser, nil
+}
+
+func (s *service) ResendOTP(email string) (OTP, error) {
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return OTP{}, err
+	}
+
+	if user.ID == 0 {
+		return OTP{}, errors.New("no user found with that email")
+	}
+
+	// Hapus OTP sebelumnya
+	errDel := s.repository.DeleteUserOTP(user.ID)
+	if errDel != nil {
+		return OTP{}, errDel
+	}
+
+	otp := helper.GenerateRandomOTP(6)
+	otpModel := OTP{
+		UserID:     user.ID,
+		OTP:        otp,
+		ExpiredOTP: time.Now().Add(2 * time.Minute).Unix(),
+	}
+
+	_, errOtp := s.repository.SaveOTP(otpModel)
+	if errOtp != nil {
+		return OTP{}, errOtp
+	}
+
+	return otpModel, nil
 }

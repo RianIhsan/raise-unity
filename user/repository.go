@@ -13,6 +13,7 @@ type Repository interface {
 	FindValidOTP(userID int, otp string) (OTP, error)
 	UpdateUser(user User) (User, error)
 	DeleteOTP(otp OTP) error
+	DeleteUserOTP(userID int) error
 }
 
 type repository struct {
@@ -71,6 +72,14 @@ func (r *repository) UpdateUser(user User) (User, error) {
 
 func (r *repository) DeleteOTP(otp OTP) error {
 	if err := r.db.Delete(&otp).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *repository) DeleteUserOTP(userID int) error {
+	err := r.db.Where("user_id = ?", userID).Delete(&OTP{}).Error
+	if err != nil {
 		return err
 	}
 	return nil

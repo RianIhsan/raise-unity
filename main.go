@@ -28,6 +28,7 @@ func main() {
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/verify", userHandler.VerifyEmail)
+	api.POST("/resend-otp", userHandler.ResendOTP)
 
 	router.Run()
 }
