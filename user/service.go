@@ -42,6 +42,7 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 		return user, errors.New("error creating password hash")
 	}
 	user.Password = passwordHash
+	user.Avatar = "https://res.cloudinary.com/dyominih0/image/upload/v1697817852/default-avatar-icon-of-social-media-user-vector_p8sqa6.jpg"
 	user.Role = "user"
 
 	newUser, err := s.repository.Save(user)

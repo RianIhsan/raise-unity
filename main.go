@@ -5,19 +5,21 @@ import (
 
 	"github.com/RianIhsan/raise-unity/handler"
 	"github.com/RianIhsan/raise-unity/user"
+	"github.com/RianIhsan/raise-unity/utils/database"
+	"github.com/RianIhsan/raise-unity/utils/migration"
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	dsn := "root:@tcp(127.0.0.1:3306)/goamal?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("Failed to fetch .env file")
 	}
+	database.InitDB()
+	migration.GoMigrate()
 
-	userRepository := user.NewRepository(db)
+	userRepository := user.NewRepository(database.DB)
 	userService := user.NewService(userRepository)
 
 	userHandler := handler.NewUserHandler(userService)

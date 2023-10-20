@@ -30,6 +30,13 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
+	existingUser, err := h.userService.GetUserByEmail(payload.Email)
+	if err == nil && existingUser.ID > 0 {
+		response := helper.APIResponse("Email already exists", http.StatusConflict, "error", nil)
+		c.JSON(http.StatusConflict, response)
+		return
+	}
+
 	newUser, err := h.userService.RegisterUser(payload)
 	if err != nil {
 		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
@@ -112,7 +119,6 @@ func (h *userHandler) ResendOTP(c *gin.Context) {
 		return
 	}
 
-	// Kirim ulang OTP ke email pengguna (gunakan metode sendOTPByEmail yang ada)
 	err = helper.SendOTPByEmail(input.Email, otp.OTP)
 	if err != nil {
 		response := helper.APIResponse("Error sending OTP", http.StatusInternalServerError, "error", nil)

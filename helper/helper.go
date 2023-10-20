@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	"github.com/wneessen/go-mail"
 )
 
@@ -48,10 +47,6 @@ func FormatValidationError(err error) []string {
 }
 
 func SendOTPByEmail(email, otp string) error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
-	}
 
 	secret_user := os.Getenv("SMTP_USER")
 	secret_pass := os.Getenv("SMTP_PASS")

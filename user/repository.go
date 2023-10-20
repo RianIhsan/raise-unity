@@ -14,6 +14,7 @@ type Repository interface {
 	UpdateUser(user User) (User, error)
 	DeleteOTP(otp OTP) error
 	DeleteUserOTP(userID int) error
+	ExistingUser(email string) error
 }
 
 type repository struct {
@@ -79,6 +80,14 @@ func (r *repository) DeleteOTP(otp OTP) error {
 
 func (r *repository) DeleteUserOTP(userID int) error {
 	err := r.db.Where("user_id = ?", userID).Delete(&OTP{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *repository) ExistingUser(email string) error {
+	err := r.db.Where("email = ?", email).First(&User{}).Error
 	if err != nil {
 		return err
 	}
