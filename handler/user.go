@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/RianIhsan/raise-unity/auth"
 	"github.com/RianIhsan/raise-unity/helper"
 	"github.com/RianIhsan/raise-unity/user"
 	"github.com/gin-gonic/gin"
@@ -10,10 +11,11 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
@@ -22,30 +24,27 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	err := c.ShouldBindJSON(&payload)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
-		errMessage := gin.H{
-			"errors": errors,
-		}
-		response := helper.APIResponse("Register account failed", http.StatusUnprocessableEntity, "error", errMessage)
+
+		response := helper.ErrorResponse("Register account failed", errors)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
 	existingUser, err := h.userService.GetUserByEmail(payload.Email)
 	if err == nil && existingUser.ID > 0 {
-		response := helper.APIResponse("Email already exists", http.StatusConflict, "error", nil)
+		response := helper.ErrorResponse("Email alredy exist", err.Error())
 		c.JSON(http.StatusConflict, response)
 		return
 	}
 
-	newUser, err := h.userService.RegisterUser(payload)
+	_, err = h.userService.RegisterUser(payload)
 	if err != nil {
-		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
+		response := helper.ErrorResponse("Register account failed", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	formatter := user.FormatUser(newUser, "eyawbidubawidlbalwdpa")
 
-	response := helper.APIResponse("Berhasil Mendaftar, silahkan cek email untuk verifikasi OTP", http.StatusCreated, "success", formatter)
+	response := helper.SuccesResponse("Register account successfully, please check your email for OTP")
 	c.JSON(http.StatusOK, response)
 }
 
@@ -55,26 +54,28 @@ func (h *userHandler) Login(c *gin.Context) {
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
-		errorMessage := gin.H{
-			"error": errors,
-		}
 
-		response := helper.APIResponse("Register account failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		response := helper.ErrorResponse("Login failed", errors)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
 	loggedinUser, err := h.userService.Login(input)
 	if err != nil {
-		errorMessage := gin.H{"errors": err.Error()}
-		response := helper.APIResponse("Login Failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		response := helper.ErrorResponse("Login failed", err.Error())
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
-	formatter := user.FormatUser(loggedinUser, "eyawbidubawidlbalwdpa")
+	token, err := h.authService.GenerateToken(loggedinUser.ID)
+	if err != nil {
+		response := helper.ErrorResponse("Login  failed", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	formatter := user.FormatUser(loggedinUser, token)
 
-	response := helper.APIResponse("Succesfully Loggedin", http.StatusOK, "succes", formatter)
+	response := helper.ResponseWithData("Succesfully Loggedin", formatter)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -83,19 +84,19 @@ func (h *userHandler) VerifyEmail(c *gin.Context) {
 	var payload user.VerifyEmailPayload
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
-		response := helper.APIResponse("Invalid payload request", http.StatusUnprocessableEntity, "error", err.Error())
+		response := helper.ErrorResponse("VerifyEmail failed", err)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
 	err := h.userService.VerifyEmail(payload.Email, payload.OTP)
 	if err != nil {
-		response := helper.APIResponse("Email verification failed", http.StatusUnprocessableEntity, "error", err.Error())
+		response := helper.ErrorResponse("VerifyEmail failed", err)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
-	response := helper.APIResponse("Email verified successfully", http.StatusOK, "success", nil)
+	response := helper.SuccesResponse("Email verified successfully")
 	c.JSON(http.StatusOK, response)
 }
 
@@ -104,28 +105,25 @@ func (h *userHandler) ResendOTP(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		errors := helper.FormatValidationError(err)
-		errMessage := gin.H{
-			"errors": errors,
-		}
-		response := helper.APIResponse("Resend OTP failed", http.StatusUnprocessableEntity, "error", errMessage)
+		response := helper.ErrorResponse("Resend OTP failed", errors)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
 	otp, err := h.userService.ResendOTP(input.Email)
 	if err != nil {
-		response := helper.APIResponse("Resend OTP failed", http.StatusBadRequest, "error", nil)
+		response := helper.ErrorResponse("Resend OTP failed", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	err = helper.SendOTPByEmail(input.Email, otp.OTP)
 	if err != nil {
-		response := helper.APIResponse("Error sending OTP", http.StatusInternalServerError, "error", nil)
+		response := helper.ErrorResponse("Error sending OTP", err.Error())
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	response := helper.APIResponse("OTP has been resent", http.StatusOK, "success", nil)
+	response := helper.SuccesResponse("OTP has been resend")
 	c.JSON(http.StatusOK, response)
 }

@@ -82,7 +82,7 @@ func (s *service) Login(input LoginInput) (User, error) {
 		return user, errors.New("no user found on that email")
 	}
 	if !user.IsVerified {
-		return user, errors.New("akun belum diverifikasi")
+		return user, errors.New("account has not been verified")
 	}
 	match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 	if err != nil {

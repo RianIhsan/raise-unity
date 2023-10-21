@@ -10,30 +10,44 @@ import (
 	"github.com/wneessen/go-mail"
 )
 
-type response struct {
-	Meta meta        `json:"meta"`
-	Data interface{} `json:"data"`
-}
-
-type meta struct {
+type succesResponse struct {
 	Message string `json:"message"`
-	Code    int    `json:"code"`
-	Status  string `json:"status"`
 }
 
-func APIResponse(messageReq string, codeReq int, statusReq string, dataReq interface{}) response {
-	meta := meta{
-		Message: messageReq,
-		Code:    codeReq,
-		Status:  statusReq,
+func SuccesResponse(message string) succesResponse {
+	messageRes := succesResponse{
+		Message: message,
 	}
 
-	jsonResponse := response{
-		Meta: meta,
-		Data: dataReq,
+	return messageRes
+}
+
+type errorResponse struct {
+	Message string `json:"message"`
+	Error   any    `json:"error"`
+}
+
+func ErrorResponse(message string, err any) errorResponse {
+	messageRes := errorResponse{
+		Message: message,
+		Error:   err,
 	}
 
-	return jsonResponse
+	return messageRes
+}
+
+type responseWithData struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
+func ResponseWithData(message string, data interface{}) responseWithData {
+	messageRes := responseWithData{
+		Message: message,
+		Data:    data,
+	}
+
+	return messageRes
 }
 
 func FormatValidationError(err error) []string {

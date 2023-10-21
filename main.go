@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/RianIhsan/raise-unity/auth"
 	"github.com/RianIhsan/raise-unity/handler"
 	"github.com/RianIhsan/raise-unity/user"
 	"github.com/RianIhsan/raise-unity/utils/database"
@@ -21,8 +22,9 @@ func main() {
 
 	userRepository := user.NewRepository(database.DB)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
 
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
