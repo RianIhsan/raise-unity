@@ -106,7 +106,7 @@ func SendOTPByEmail(email, otp string) error {
 	m.Subject("Verifikasi Email - RAISE UNITY")
 	m.SetBodyString(mail.TypeTextPlain, "Kode OTP anda adalah : "+otp)
 
-	c, err := mail.NewClient("smtp.gmail.com", mail.WithPort(convPort), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername("rianihsanardiansyah@gmail.com"), mail.WithPassword(secret_pass))
+	c, err := mail.NewClient("smtp.gmail.com", mail.WithPort(convPort), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername(secret_user), mail.WithPassword(secret_pass))
 	if err != nil {
 		return err
 	}
