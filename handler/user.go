@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"context"
 	"net/http"
+	"os"
 
 	"github.com/RianIhsan/raise-unity/auth"
 	"github.com/RianIhsan/raise-unity/helper"
 	"github.com/RianIhsan/raise-unity/user"
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 )
 
@@ -126,4 +130,33 @@ func (h *userHandler) ResendOTP(c *gin.Context) {
 
 	response := helper.SuccesResponse("OTP has been resend")
 	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+
+	currentUser := c.MustGet("CurrentUser").(user.User)
+
+	if err := c.ShouldBind(&currentUser.ID); err != nil {
+		response := helper.ErrorResponse("Error Payload", err.Error())
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+	fileHeader, _ := c.FormFile("avatar")
+	file, _ := fileHeader.Open()
+	ctx := context.Background()
+	urlCloudinary := os.Getenv("CLOUDINARY_URL")
+	cldService, _ := cloudinary.NewFromURL(urlCloudinary)
+	response, _ := cldService.Upload.Upload(ctx, file, uploader.UploadParams{})
+
+	_, err := h.userService.SaveAvatar(currentUser.ID, response.SecureURL)
+	if err != nil {
+		response := helper.ErrorResponse("Error update avatar", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	res := helper.UpdateAvatarRes("Success update avatar", response.SecureURL)
+
+	c.JSON(http.StatusOK, res)
+
 }

@@ -14,8 +14,33 @@ type succesResponse struct {
 	Message string `json:"message"`
 }
 
+type updateAvatarRes struct {
+	Message string `json:"message"`
+	Avatar  string `json:"avatar"`
+}
+
 func SuccesResponse(message string) succesResponse {
 	messageRes := succesResponse{
+		Message: message,
+	}
+
+	return messageRes
+}
+func UpdateAvatarRes(message string, avatar string) updateAvatarRes {
+	messageRes := updateAvatarRes{
+		Message: message,
+		Avatar:  avatar,
+	}
+
+	return messageRes
+}
+
+type generalResponse struct {
+	Message string `json:"message"`
+}
+
+func GeneralResponse(message string) generalResponse {
+	messageRes := generalResponse{
 		Message: message,
 	}
 

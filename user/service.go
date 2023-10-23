@@ -16,6 +16,8 @@ type Service interface {
 	UpdateUser(user User) (User, error)               // Tambahkan metode UpdateUser
 	VerifyEmail(email string, otp string) error
 	ResendOTP(email string) (OTP, error)
+	SaveAvatar(userID int, file string) (User, error)
+	GetUserByID(ID int) (User, error)
 }
 
 type service struct {
@@ -181,4 +183,32 @@ func (s *service) ResendOTP(email string) (OTP, error) {
 	}
 
 	return otpModel, nil
+}
+
+func (s *service) SaveAvatar(userID int, file string) (User, error) {
+	user, err := s.repository.FindByID(userID)
+	if err != nil {
+		return user, err
+	}
+
+	user.Avatar = file
+
+	updatedUser, err := s.repository.Update(user)
+	if err != nil {
+		return updatedUser, err
+	}
+
+	return updatedUser, nil
+}
+
+func (s *service) GetUserByID(ID int) (User, error) {
+	user, err := s.repository.FindByID(ID)
+	if err != nil {
+		return user, err
+	}
+
+	if user.ID == 0 {
+		return user, errors.New("no user found on with that ID")
+	}
+	return user, nil
 }

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,6 +16,8 @@ type Repository interface {
 	DeleteOTP(otp OTP) error
 	DeleteUserOTP(userID int) error
 	ExistingUser(email string) error
+	FindByID(ID int) (User, error)
+	Update(user User) (User, error)
 }
 
 type repository struct {
@@ -92,4 +95,27 @@ func (r *repository) ExistingUser(email string) error {
 		return err
 	}
 	return nil
+}
+
+func (r *repository) FindByID(ID int) (User, error) {
+	var user User
+	err := r.db.Where("id = ?", ID).Find(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r *repository) Update(user User) (User, error) {
+	result := r.db.Where("id = ?", user.ID).Updates(&user)
+	if result.Error != nil {
+		return user, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return user, errors.New("no records were updated")
+	}
+
+	return user, nil
 }
