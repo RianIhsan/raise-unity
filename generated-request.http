@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "email": "example@gmail.com",
-  "otp": "164637"
+  "otp": "398839"
 }
 
 
@@ -26,3 +26,8 @@ Content-Type: application/json
   "email": "example@gmail.com",
   "password": "RianTest123"
 }
+
+
+###
+GET http://localhost:8080/api/v1/campaigns
+Content-Type: application/json

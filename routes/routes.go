@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/RianIhsan/raise-unity/auth"
+	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/handler"
 	"github.com/RianIhsan/raise-unity/middleware"
 	"github.com/RianIhsan/raise-unity/user"
@@ -12,10 +13,13 @@ import (
 func SetupRoute(router *gin.Engine) {
 	authService := auth.NewService()
 	userRepository := user.NewRepository(database.DB)
+	campRepository := campaign.NewRepository(database.DB)
 
 	userService := user.NewService(userRepository)
+	campService := campaign.NewService(campRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
+	campHandler := handler.NewCampaignHandler(campService)
 	api := router.Group("/api/v1")
 
 	api.POST("/users", userHandler.RegisterUser)
@@ -23,4 +27,6 @@ func SetupRoute(router *gin.Engine) {
 	api.POST("/verify", userHandler.VerifyEmail)
 	api.POST("/resend-otp", userHandler.ResendOTP)
 	api.PATCH("/avatar", middleware.AuthMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	api.GET("/campaigns", campHandler.GetCampaigns)
 }

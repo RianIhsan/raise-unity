@@ -27,5 +27,4 @@ type CampaignImage struct {
 	IsPrimary  int8      `json:"is_primary" gorm:"type:tinyint(4)"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
-	Campaign   Campaign  `json:"campaign" gorm:"foreignKey:CampaignID"`
 }
