@@ -12,6 +12,7 @@ import (
 func SetupRoute(router *gin.Engine) {
 	authService := auth.NewService()
 	userRepository := user.NewRepository(database.DB)
+
 	userService := user.NewService(userRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
