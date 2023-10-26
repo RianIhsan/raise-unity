@@ -17,7 +17,6 @@ func NewCampaignHandler(service campaign.Service) *campaignHandler {
 }
 
 func (h *campaignHandler) GetCampaigns(c *gin.Context) {
-	//user id di ubah ke string
 	userID, _ := strconv.Atoi(c.Query("user_id"))
 
 	campaigns, err := h.service.FindCampaigns(userID)
@@ -29,4 +28,24 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	response := helper.ResponseWithData("List of campaigns", campaign.FormatCampaigns(campaigns))
 	c.JSON(http.StatusOK, response)
 
+}
+
+func (h *campaignHandler) GetCampaign(c *gin.Context) {
+	var input campaign.GetCampaignDetailInput
+	err := c.ShouldBindUri(&input)
+	if err != nil {
+		response := helper.ErrorResponse("Failed to get campaign 1", err)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	campaignDetails, err := h.service.FindCampaignByID(input)
+	if err != nil {
+		response := helper.ErrorResponse("Failed to get campaign 2", err)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.ResponseWithData("Campaign Details", campaign.FormatCampaignDetails(campaignDetails))
+	c.JSON(http.StatusOK, response)
 }

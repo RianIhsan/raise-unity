@@ -1,22 +1,21 @@
 package user
 
 import (
-	"github.com/RianIhsan/raise-unity/campaign"
 	"time"
 )
 
 type User struct {
-	ID         int                 `json:"id" gorm:"primaryKey;autoIncrement"`
-	Name       string              `json:"name" gorm:"type:varchar(255)"`
-	Occupation string              `json:"occupation" gorm:"type:varchar(255)"`
-	Email      string              `json:"email" gorm:"type:varchar(255);unique"`
-	Password   string              `json:"password" gorm:"type:varchar(255)"`
-	Avatar     string              `json:"avatar" form:"avatar" gorm:"type:varchar(255)"`
-	Role       string              `json:"role" gorm:"type:varchar(25)"`
-	IsVerified bool                `json:"is_verified" gorm:"default:false"`
-	CreatedAt  time.Time           `json:"created_at"`
-	UpdatedAt  time.Time           `json:"updated_at"`
-	Campaigns  []campaign.Campaign `json:"campaigns" gorm:"foreignKey:UserID"`
+	ID         int       `json:"id" gorm:"primaryKey;autoIncrement"`
+	Name       string    `json:"name" gorm:"type:varchar(255)"`
+	Occupation string    `json:"occupation" gorm:"type:varchar(255)"`
+	Email      string    `json:"email" gorm:"type:varchar(255);unique"`
+	Password   string    `json:"password" gorm:"type:varchar(255)"`
+	Avatar     string    `json:"avatar" form:"avatar" gorm:"type:varchar(255)"`
+	Role       string    `json:"role" gorm:"type:varchar(25)"`
+	IsVerified bool      `json:"is_verified" gorm:"default:false"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	//Campaigns  []campaign.Campaign `json:"campaigns" gorm:"foreignKey:UserID"`
 }
 
 type OTP struct {
