@@ -11,9 +11,9 @@ import (
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
-	GetUserByEmail(email string) (User, error)        // Tambahkan metode GetUserByEmail
-	FindValidOTP(userID int, otp string) (OTP, error) // Tambahkan metode FindValidOTP
-	UpdateUser(user User) (User, error)               // Tambahkan metode UpdateUser
+	GetUserByEmail(email string) (User, error)
+	FindValidOTP(userID int, otp string) (OTP, error)
+	UpdateUser(user User) (User, error)
 	VerifyEmail(email string, otp string) error
 	ResendOTP(email string) (OTP, error)
 	SaveAvatar(userID int, file string) (User, error)
@@ -41,7 +41,7 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 		KeyLength:   32,
 	})
 	if err != nil {
-		return user, errors.New("error creating password hash")
+		return user, err
 	}
 	user.Password = passwordHash
 	user.Avatar = "https://res.cloudinary.com/dyominih0/image/upload/v1697817852/default-avatar-icon-of-social-media-user-vector_p8sqa6.jpg"
@@ -49,7 +49,7 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 
 	newUser, err := s.repository.Save(user)
 	if err != nil {
-		return newUser, errors.New("error saving user")
+		return newUser, err
 	}
 
 	otp := helper.GenerateRandomOTP(6)
@@ -62,12 +62,12 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 
 	_, errOtp := s.repository.SaveOTP(otpModel)
 	if errOtp != nil {
-		return newUser, errors.New("error sending OTP")
+		return newUser, errOtp
 	}
 
 	err = helper.SendOTPByEmail(newUser.Email, otp)
 	if err != nil {
-		return newUser, errors.New("error sending OTP")
+		return newUser, err
 	}
 	return newUser, nil
 }
@@ -84,14 +84,14 @@ func (s *service) Login(input LoginInput) (User, error) {
 		return user, errors.New("no user found on that email")
 	}
 	if !user.IsVerified {
-		return user, errors.New("account has not been verified")
+		return user, err
 	}
 	match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 	if err != nil {
 		return user, err
 	}
 	if !match {
-		return user, errors.New("password does not match")
+		return user, err
 	}
 	return user, nil
 }

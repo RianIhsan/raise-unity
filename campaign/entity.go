@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"github.com/RianIhsan/raise-unity/user"
 	"time"
 )
 
@@ -18,6 +19,7 @@ type Campaign struct {
 	CreatedAt        time.Time       `json:"created_at"`
 	UpdatedAt        time.Time       `json:"updated_at"`
 	CampaignImages   []CampaignImage `json:"campaign_images" gorm:"foreignKey:CampaignID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User             user.User       `json:"user"`
 }
 
 type CampaignImage struct {

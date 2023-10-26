@@ -29,4 +29,5 @@ func SetupRoute(router *gin.Engine) {
 	api.PATCH("/avatar", middleware.AuthMiddleware(authService, userService), userHandler.UploadAvatar)
 
 	api.GET("/campaigns", campHandler.GetCampaigns)
+	api.GET("/campaign/:id", campHandler.GetCampaign)
 }
