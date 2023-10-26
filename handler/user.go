@@ -67,7 +67,7 @@ func (h *userHandler) Login(c *gin.Context) {
 	loggedinUser, err := h.userService.Login(input)
 	if err != nil {
 		response := helper.ErrorResponse("Login failed", err.Error())
-		c.JSON(http.StatusUnprocessableEntity, response)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
