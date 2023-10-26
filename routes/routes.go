@@ -32,4 +32,5 @@ func SetupRoute(router *gin.Engine) {
 	api.GET("/campaign/:id", campHandler.GetCampaign)
 	api.POST("/campaign", middleware.AuthMiddleware(authService, userService), campHandler.CreateCampaign)
 	api.PUT("/campaign/:id", middleware.AuthMiddleware(authService, userService), campHandler.UpdateCampaign)
+	api.POST("/campaign-images", middleware.AuthMiddleware(authService, userService), campHandler.UploadImage)
 }
