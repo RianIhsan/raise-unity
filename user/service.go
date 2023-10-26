@@ -84,14 +84,14 @@ func (s *service) Login(input LoginInput) (User, error) {
 		return user, errors.New("no user found on that email")
 	}
 	if !user.IsVerified {
-		return user, err
+		return user, errors.New("this account has not been verified")
 	}
 	match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 	if err != nil {
 		return user, err
 	}
 	if !match {
-		return user, err
+		return user, errors.New("invalid password ")
 	}
 	return user, nil
 }
