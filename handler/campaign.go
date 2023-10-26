@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"context"
 	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/helper"
 	"github.com/RianIhsan/raise-unity/user"
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -104,4 +108,36 @@ func (h *campaignHandler) UpdateCampaign(c *gin.Context) {
 
 	response := helper.ResponseWithData("Success updating campaign", campaign.FormatCampaign(updatedCampaign))
 	c.JSON(http.StatusOK, response)
+}
+
+func (h *campaignHandler) UploadImage(c *gin.Context) {
+	currentUser := c.MustGet("CurrentUser").(user.User)
+	if err := c.ShouldBind(&currentUser.ID); err != nil {
+		errors := helper.FormatValidationError(err)
+		response := helper.ErrorResponse("Unauthorized", errors)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	var input campaign.CreateCampaignImageInput
+	err := c.ShouldBind(&input)
+	if err != nil {
+		response := helper.ErrorResponse("Failed to upload campaign image", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	fileHeader, err := c.FormFile("image")
+	file, err := fileHeader.Open()
+	ctx := context.Background()
+	urlCloudinary := os.Getenv("CLOUDINARY_URL")
+	cldService, _ := cloudinary.NewFromURL(urlCloudinary)
+	response, _ := cldService.Upload.Upload(ctx, file, uploader.UploadParams{})
+	_, err = h.service.SaveCampaignImage(input, response.SecureURL)
+	if err != nil {
+		response := helper.ErrorResponse("Failed to upload campaign image", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	res := helper.SuccesResponse("Successfully added campaign image to this campaign ")
+	c.JSON(http.StatusOK, res)
 }

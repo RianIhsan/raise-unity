@@ -26,7 +26,7 @@ type CampaignImage struct {
 	ID         int       `json:"id" gorm:"primaryKey;autoIncrement"`
 	CampaignID int       `json:"campaign_id" gorm:"index"`
 	FileName   string    `json:"file_name" form:"file_name" gorm:"type:varchar(255)"`
-	IsPrimary  int8      `json:"is_primary" gorm:"type:tinyint(4)"`
+	IsPrimary  int       `json:"is_primary" gorm:"type:tinyint(4)"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

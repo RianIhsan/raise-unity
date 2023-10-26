@@ -7,6 +7,7 @@ type Service interface {
 	FindCampaignByID(input GetCampaignDetailInput) (Campaign, error)
 	CreateCampaign(input CreateCampaignInput) (Campaign, error)
 	UpdateCampaign(inputID GetCampaignDetailInput, data CreateCampaignInput) (Campaign, error)
+	SaveCampaignImage(input CreateCampaignImageInput, file string) (CampaignImage, error)
 }
 
 type service struct {
@@ -77,4 +78,27 @@ func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, data CreateCamp
 		return updatedCampaign, err
 	}
 	return updatedCampaign, nil
+}
+
+func (s *service) SaveCampaignImage(input CreateCampaignImageInput, file string) (CampaignImage, error) {
+	isPrimary := 0
+	if input.IsPrimary == true {
+		isPrimary = 1
+
+		_, err := s.repository.MarkAllImagesAsNonPrimary(input.CampaignID)
+		if err != nil {
+			return CampaignImage{}, err
+		}
+	}
+	campaignImage := CampaignImage{}
+	campaignImage.CampaignID = input.CampaignID
+	campaignImage.IsPrimary = isPrimary
+	campaignImage.FileName = file
+
+	newCampaignImage, err := s.repository.CreateImage(campaignImage)
+	if err != nil {
+		return newCampaignImage, err
+	}
+
+	return newCampaignImage, nil
 }
