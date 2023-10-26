@@ -22,8 +22,8 @@ func SetupRoute(router *gin.Engine) {
 	campHandler := handler.NewCampaignHandler(campService)
 	api := router.Group("/api/v1")
 
-	api.POST("/users", userHandler.RegisterUser)
-	api.POST("/sessions", userHandler.Login)
+	api.POST("/register", userHandler.RegisterUser)
+	api.POST("/login", userHandler.Login)
 	api.POST("/verify", userHandler.VerifyEmail)
 	api.POST("/resend-otp", userHandler.ResendOTP)
 	api.PATCH("/avatar", middleware.AuthMiddleware(authService, userService), userHandler.UploadAvatar)
