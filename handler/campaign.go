@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/helper"
+	"github.com/RianIhsan/raise-unity/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -47,5 +48,30 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	}
 
 	response := helper.ResponseWithData("Campaign Details", campaign.FormatCampaignDetails(campaignDetails))
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *campaignHandler) CreateCampaign(c *gin.Context) {
+	var input campaign.CreateCampaignInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		response := helper.ErrorResponse("Payload invalid", errors)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	currentUser := c.MustGet("CurrentUser").(user.User)
+	input.User = currentUser
+
+	newCampaign, err := h.service.CreateCampaign(input)
+	if err != nil {
+		response := helper.ErrorResponse("Failed create campaign", err)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.ErrorResponse("Success creating campaign", campaign.FormatCampaign(newCampaign))
 	c.JSON(http.StatusOK, response)
 }

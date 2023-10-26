@@ -9,7 +9,7 @@ type CampaignFormatter struct {
 	ShortDescription string `json:"short_description" gorm:"type:varchar(255)"`
 	GoalAmount       int    `json:"goal_amount"`
 	CurrentAmount    int    `json:"current_amount"`
-	CampaignImages   string `json:"campaign_images" gorm:"foreignKey:CampaignID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	CampaignImages   string `json:"campaign_images,omitempty" gorm:"foreignKey:CampaignID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func FormatCampaign(campaign Campaign) CampaignFormatter {
@@ -20,12 +20,10 @@ func FormatCampaign(campaign Campaign) CampaignFormatter {
 	campaignFormatter.ShortDescription = campaign.ShortDescription
 	campaignFormatter.GoalAmount = campaign.GoalAmount
 	campaignFormatter.CurrentAmount = campaign.CurrentAmount
-	campaignFormatter.CampaignImages = ""
 
 	if len(campaign.CampaignImages) > 0 {
 		campaignFormatter.CampaignImages = campaign.CampaignImages[0].FileName
 	}
-
 	return campaignFormatter
 }
 
