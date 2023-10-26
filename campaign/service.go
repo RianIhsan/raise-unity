@@ -1,9 +1,12 @@
 package campaign
 
+import "errors"
+
 type Service interface {
 	FindCampaigns(userID int) ([]Campaign, error)
 	FindCampaignByID(input GetCampaignDetailInput) (Campaign, error)
 	CreateCampaign(input CreateCampaignInput) (Campaign, error)
+	UpdateCampaign(inputID GetCampaignDetailInput, data CreateCampaignInput) (Campaign, error)
 }
 
 type service struct {
@@ -52,4 +55,26 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error) {
 	}
 
 	return newCampaign, nil
+}
+
+func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, data CreateCampaignInput) (Campaign, error) {
+	campaign, err := s.repository.FindByID(inputID.ID)
+	if err != nil {
+		return campaign, err
+	}
+
+	if campaign.UserID != data.User.ID {
+		return campaign, errors.New("Not an owner of the campaign")
+	}
+	campaign.Name = data.Name
+	campaign.ShortDescription = data.ShortDescription
+	campaign.Description = data.Description
+	campaign.Perks = data.Perks
+	campaign.GoalAmount = data.GoalAmount
+
+	updatedCampaign, err := s.repository.Update(campaign)
+	if err != nil {
+		return updatedCampaign, err
+	}
+	return updatedCampaign, nil
 }

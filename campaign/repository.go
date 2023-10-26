@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -9,6 +10,7 @@ type Repository interface {
 	FindByUserID(userID int) ([]Campaign, error)
 	FindByID(ID int) (Campaign, error)
 	Save(campaign Campaign) (Campaign, error)
+	Update(campaign Campaign) (Campaign, error)
 }
 
 type repository struct {
@@ -52,6 +54,19 @@ func (r *repository) Save(campaign Campaign) (Campaign, error) {
 	err := r.db.Create(&campaign).Error
 	if err != nil {
 		return campaign, err
+	}
+
+	return campaign, nil
+}
+
+func (r *repository) Update(campaign Campaign) (Campaign, error) {
+	result := r.db.Where("id = ?", campaign.ID).Updates(&campaign)
+	if result.Error != nil {
+		return campaign, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return campaign, errors.New("no records were updated")
 	}
 
 	return campaign, nil
