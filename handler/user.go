@@ -34,9 +34,9 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	existingUser, err := h.userService.GetUserByEmail(payload.Email)
-	if err == nil && existingUser.ID > 0 {
-		response := helper.ErrorResponse("Email alredy exist", err.Error())
+	_, err = h.userService.GetUserByEmail(payload.Email)
+	if err != nil {
+		response := helper.ErrorResponse("Register account failed", err.Error())
 		c.JSON(http.StatusConflict, response)
 		return
 	}
