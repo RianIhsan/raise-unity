@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/yondev:latest
       -
