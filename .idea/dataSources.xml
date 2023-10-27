@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:mariadb://127.0.0.1:3306/raise_unity</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="127.0.0.1" uuid="4398a365-e3d8-4000-b09c-816a910a3c58">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://127.0.0.1:3306/raisetest</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

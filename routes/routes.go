@@ -5,21 +5,27 @@ import (
 	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/handler"
 	"github.com/RianIhsan/raise-unity/middleware"
+	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"github.com/RianIhsan/raise-unity/utils/database"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRoute(router *gin.Engine) {
-	authService := auth.NewService()
+
 	userRepository := user.NewRepository(database.DB)
 	campRepository := campaign.NewRepository(database.DB)
+	transactionRepository := transaction.NewRepository(database.DB)
 
+	authService := auth.NewService()
 	userService := user.NewService(userRepository)
 	campService := campaign.NewService(campRepository)
+	transactionService := transaction.NewService(transactionRepository, campRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	campHandler := handler.NewCampaignHandler(campService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+
 	api := router.Group("/api/v1")
 
 	api.POST("/register", userHandler.RegisterUser)
@@ -33,4 +39,6 @@ func SetupRoute(router *gin.Engine) {
 	api.POST("/campaign", middleware.AuthMiddleware(authService, userService), campHandler.CreateCampaign)
 	api.PUT("/campaign/:id", middleware.AuthMiddleware(authService, userService), campHandler.UpdateCampaign)
 	api.POST("/campaign-images", middleware.AuthMiddleware(authService, userService), campHandler.UploadImage)
+
+	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
 }
