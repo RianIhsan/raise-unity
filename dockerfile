@@ -1,11 +1,11 @@
 FROM golang:1.21-alpine
 
-COPY .env /app/.env
-
 WORKDIR /app
+
+COPY . .
 
 RUN go mod tidy
 
 RUN go build -o app .
 
-CMD ["/app/app"]
+CMD ["./app"]
