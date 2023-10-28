@@ -11,10 +11,10 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Failed to fetch .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Failed to fetch .env file")
+	// }
 	database.InitDB()
 	migration.GoMigrate()
 
