@@ -46,6 +46,7 @@ type CampaignDetailsFormatter struct {
 	CampaignImages   string                    `json:"campaign_images" gorm:"foreignKey:CampaignID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	GoalAmount       int                       `json:"goal_amount"`
 	CurrentAmount    int                       `json:"current_amount"`
+	BackerCount      int                       `json:"backer_count"`
 	UserID           int                       `json:"user_id"`
 	Perks            []string                  `json:"perks"`
 	User             CampaignUserFormatter     `json:"user"`
@@ -70,6 +71,7 @@ func FormatCampaignDetails(campaign Campaign) CampaignDetailsFormatter {
 	campaignDetailsFormatter.Description = campaign.Description
 	campaignDetailsFormatter.GoalAmount = campaign.GoalAmount
 	campaignDetailsFormatter.CurrentAmount = campaign.CurrentAmount
+	campaignDetailsFormatter.BackerCount = campaign.BackerCount
 	campaignDetailsFormatter.UserID = campaign.UserID
 	campaignDetailsFormatter.CampaignImages = ""
 
