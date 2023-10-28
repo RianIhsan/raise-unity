@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
+	// "log"
 
 	"github.com/RianIhsan/raise-unity/routes"
 	"github.com/RianIhsan/raise-unity/utils/database"
 	"github.com/RianIhsan/raise-unity/utils/migration"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 func main() {
