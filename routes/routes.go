@@ -5,6 +5,7 @@ import (
 	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/handler"
 	"github.com/RianIhsan/raise-unity/middleware"
+	"github.com/RianIhsan/raise-unity/payment"
 	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"github.com/RianIhsan/raise-unity/utils/database"
@@ -20,7 +21,8 @@ func SetupRoute(router *gin.Engine) {
 	authService := auth.NewService()
 	userService := user.NewService(userRepository)
 	campService := campaign.NewService(campRepository)
-	transactionService := transaction.NewService(transactionRepository, campRepository)
+	paymentService := payment.NewService()
+	transactionService := transaction.NewService(transactionRepository, campRepository, paymentService)
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	campHandler := handler.NewCampaignHandler(campService)
@@ -43,4 +45,5 @@ func SetupRoute(router *gin.Engine) {
 
 	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
 	api.GET("/transactions", middleware.AuthMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	api.POST("/transactions", middleware.AuthMiddleware(authService, userService), transactionHandler.CreateTransaction)
 }
