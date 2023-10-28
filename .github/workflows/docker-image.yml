@@ -51,6 +51,6 @@ jobs:
             -e SMTP_PASS=${{ secrets.SMTP_PASS }} \
             -e SMTP_USER=${{ secrets.SMTP_USER }} \
             -e SMTP_PORT=${{ secrets.SMTP_PORT }} \
-            -e MSERVER=${{ secrets.MSERVER }}
-            -e MCLIENT=${{ secrets.MCLIENT}
+            -e MSERVER=${{ secrets.MSERVER }} \
+            -e MCLIENT=${{ secrets.MCLIENT }} \
             ${{ secrets.DOCKERHUB_USERNAME }}/yondev
