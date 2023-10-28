@@ -13,6 +13,7 @@ type Transaction struct {
 	Amount     int               `json:"amount"`
 	Status     string            `json:"status"`
 	Code       string            `json:"code"`
+	PaymentURL string            `json:"payment_url" gorm:"type:varchar(255)"`
 	User       user.User         `json:"user"`
 	Campaign   campaign.Campaign `json:"campaign"`
 	CreatedAt  time.Time         `json:"created_at"`
