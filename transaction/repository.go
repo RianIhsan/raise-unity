@@ -11,6 +11,7 @@ type Repository interface {
 	GetByUserID(userID int) ([]Transaction, error)
 	Save(transaction Transaction) (Transaction, error)
 	Update(transaction Transaction) (Transaction, error)
+	GetByCode(Code string) (Transaction, error)
 }
 
 func NewRepository(db *gorm.DB) *repository {
@@ -50,5 +51,15 @@ func (r *repository) Update(transaction Transaction) (Transaction, error) {
 	if err != nil {
 		return transaction, err
 	}
+	return transaction, nil
+}
+
+func (r *repository) GetByCode(Code string) (Transaction, error) {
+	var transaction Transaction
+	err := r.db.Where("code = ?", Code).Find(&transaction).Error
+	if err != nil {
+		return transaction, err
+	}
+
 	return transaction, nil
 }
