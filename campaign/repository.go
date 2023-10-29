@@ -17,6 +17,7 @@ type Repository interface {
 	GetPaginatedCampaigns(offset, limit int) ([]Campaign, error)
 	GetTotalCampaignsByUserID(userID int) (int64, error)
 	GetPaginatedCampaignsByUserID(userID, offset, limit int) ([]Campaign, error)
+	SearchCampaignsByName(name string) ([]Campaign, error)
 }
 
 type repository struct {
@@ -126,6 +127,17 @@ func (r *repository) GetPaginatedCampaignsByUserID(userID, offset, limit int) ([
 	err := r.db.Where("user_id = ?", userID).
 		Offset(offset).
 		Limit(limit).
+		Preload("CampaignImages", "campaign_images.is_primary = 1").
+		Find(&campaigns).Error
+	if err != nil {
+		return campaigns, err
+	}
+	return campaigns, nil
+}
+
+func (r *repository) SearchCampaignsByName(name string) ([]Campaign, error) {
+	var campaigns []Campaign
+	err := r.db.Where("name LIKE ?", "%"+name+"%").
 		Preload("CampaignImages", "campaign_images.is_primary = 1").
 		Find(&campaigns).Error
 	if err != nil {

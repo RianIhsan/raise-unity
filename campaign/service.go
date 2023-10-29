@@ -13,6 +13,7 @@ type Service interface {
 	SaveCampaignImage(input CreateCampaignImageInput, file string) (CampaignImage, error)
 	GetPaginatedCampaigns(page, pageSize int) ([]Campaign, int, int, int, int, error)
 	GetPaginatedCampaignsByUserID(userID, page, pageSize int) ([]Campaign, int, int, int, int, error)
+	SearchCampaignsByName(name string) ([]Campaign, error)
 }
 
 type service struct {
@@ -166,4 +167,12 @@ func (s *service) GetPaginatedCampaignsByUserID(userID, page, pageSize int) ([]C
 	}
 
 	return campaigns, totalPages, page, nextPage, prevPage, nil
+}
+
+func (s *service) SearchCampaignsByName(name string) ([]Campaign, error) {
+	campaigns, err := s.repository.SearchCampaignsByName(name)
+	if err != nil {
+		return campaigns, err
+	}
+	return campaigns, nil
 }

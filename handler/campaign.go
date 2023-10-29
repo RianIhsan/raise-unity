@@ -30,11 +30,15 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	var totalPages, currentPage, nextPage, prevPage int
 	var err error
 
-	if userID != 0 {
+	searchName := c.Query("name")
+	if searchName != "" {
+		campaigns, err = h.service.SearchCampaignsByName(searchName)
+	} else if userID != 0 {
 		campaigns, totalPages, currentPage, nextPage, prevPage, err = h.service.GetPaginatedCampaignsByUserID(userID, page, pageSize)
 	} else {
 		campaigns, totalPages, currentPage, nextPage, prevPage, err = h.service.GetPaginatedCampaigns(page, pageSize)
 	}
+
 	if err != nil {
 		response := helper.ErrorResponse("Error to get campaigns", err)
 		c.JSON(http.StatusBadRequest, response)
