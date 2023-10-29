@@ -129,5 +129,31 @@ func GenerateRandomOTP(otpLent int) string {
 	}
 
 	return string(otp)
+}
 
+type PaginationMeta struct {
+	CurrentPage int `json:"current_page"`
+	TotalPage   int `json:"total_page"`
+	NextPage    int `json:"next_page"`
+	PrevPage    int `json:"prev_page"`
+}
+type TResponseWithPaginationAndNextPrev struct {
+	Message string         `json:"message"`
+	Data    interface{}    `json:"data"`
+	Meta    PaginationMeta `json:"meta"`
+}
+
+func ResponseWithPaginationAndNextPrev(message string, data interface{}, currentPage, totalPages, nextPage, prevPage int) TResponseWithPaginationAndNextPrev {
+	meta := PaginationMeta{
+		CurrentPage: currentPage,
+		TotalPage:   totalPages,
+		NextPage:    nextPage,
+		PrevPage:    prevPage,
+	}
+
+	return TResponseWithPaginationAndNextPrev{
+		Message: message,
+		Data:    data,
+		Meta:    meta,
+	}
 }

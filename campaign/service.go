@@ -1,6 +1,9 @@
 package campaign
 
-import "errors"
+import (
+	"errors"
+	"math"
+)
 
 type Service interface {
 	FindCampaigns(userID int) ([]Campaign, error)
@@ -8,6 +11,8 @@ type Service interface {
 	CreateCampaign(input CreateCampaignInput) (Campaign, error)
 	UpdateCampaign(inputID GetCampaignDetailInput, data CreateCampaignInput) (Campaign, error)
 	SaveCampaignImage(input CreateCampaignImageInput, file string) (CampaignImage, error)
+	GetPaginatedCampaigns(page, pageSize int) ([]Campaign, int, int, int, int, error)
+	GetPaginatedCampaignsByUserID(userID, page, pageSize int) ([]Campaign, int, int, int, int, error)
 }
 
 type service struct {
@@ -101,4 +106,64 @@ func (s *service) SaveCampaignImage(input CreateCampaignImageInput, file string)
 	}
 
 	return newCampaignImage, nil
+}
+
+func (s *service) GetPaginatedCampaigns(page, pageSize int) ([]Campaign, int, int, int, int, error) {
+	totalCampaigns, err := s.repository.GetTotalCampaigns()
+	if err != nil {
+		return nil, 0, 0, 0, 0, err
+	}
+
+	totalPages := int(math.Ceil(float64(totalCampaigns) / float64(pageSize)))
+	if page < 1 {
+		page = 1
+	}
+	if page > totalPages {
+		page = totalPages
+	}
+	offset := (page - 1) * pageSize
+	campaigns, err := s.repository.GetPaginatedCampaigns(offset, pageSize)
+	if err != nil {
+		return nil, 0, 0, 0, 0, err
+	}
+	var nextPage, prevPage int
+	if page < totalPages {
+		nextPage = page + 1
+	}
+	if page > 1 {
+		prevPage = page - 1
+	}
+
+	return campaigns, totalPages, page, nextPage, prevPage, nil
+}
+
+func (s *service) GetPaginatedCampaignsByUserID(userID, page, pageSize int) ([]Campaign, int, int, int, int, error) {
+	totalCampaigns, err := s.repository.GetTotalCampaignsByUserID(userID)
+	if err != nil {
+		return nil, 0, 0, 0, 0, err
+	}
+
+	totalPages := int(math.Ceil(float64(totalCampaigns) / float64(pageSize)))
+	if page < 1 {
+		page = 1
+	}
+	if page > totalPages {
+		page = totalPages
+	}
+
+	offset := (page - 1) * pageSize
+	campaigns, err := s.repository.GetPaginatedCampaignsByUserID(userID, offset, pageSize)
+	if err != nil {
+		return nil, 0, 0, 0, 0, err
+	}
+	var nextPage, prevPage int
+	if page < totalPages {
+		nextPage = page + 1
+	}
+
+	if page > 1 {
+		prevPage = page - 1
+	}
+
+	return campaigns, totalPages, page, nextPage, prevPage, nil
 }
