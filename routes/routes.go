@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/RianIhsan/raise-unity/admin"
 	"github.com/RianIhsan/raise-unity/auth"
 	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/handler"
@@ -14,16 +15,19 @@ import (
 
 func SetupRoute(router *gin.Engine) {
 
+	adminRepo := admin.NewRepository(database.DB)
 	userRepository := user.NewRepository(database.DB)
 	campRepository := campaign.NewRepository(database.DB)
 	transactionRepository := transaction.NewRepository(database.DB)
 
 	authService := auth.NewService()
+	adminService := admin.NewService(adminRepo)
 	userService := user.NewService(userRepository)
 	campService := campaign.NewService(campRepository)
 	paymentService := payment.NewService()
 	transactionService := transaction.NewService(transactionRepository, campRepository, paymentService)
 
+	adminHandler := handler.NewAdminHandler(adminService, authService)
 	userHandler := handler.NewUserHandler(userService, authService)
 	campHandler := handler.NewCampaignHandler(campService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
@@ -47,4 +51,6 @@ func SetupRoute(router *gin.Engine) {
 	api.GET("/transactions", middleware.AuthMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", middleware.AuthMiddleware(authService, userService), transactionHandler.CreateTransaction)
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
+
+	api.GET("/users", middleware.AuthMiddleware(authService, userService), adminHandler.GetAllUsers)
 }
