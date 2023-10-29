@@ -22,15 +22,39 @@ func NewCampaignHandler(service campaign.Service) *campaignHandler {
 }
 
 func (h *campaignHandler) GetCampaigns(c *gin.Context) {
-	userID, _ := strconv.Atoi(c.Query("user_id"))
+	userID, _ := strconv.Atoi(c.DefaultQuery("user_id", "0"))
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
 
-	campaigns, err := h.service.FindCampaigns(userID)
+	var campaigns []campaign.Campaign
+	var totalPages, currentPage, nextPage, prevPage int
+	var err error
+
+	if userID != 0 {
+		campaigns, totalPages, currentPage, nextPage, prevPage, err = h.service.GetPaginatedCampaignsByUserID(userID, page, pageSize)
+	} else {
+		campaigns, totalPages, currentPage, nextPage, prevPage, err = h.service.GetPaginatedCampaigns(page, pageSize)
+	}
 	if err != nil {
 		response := helper.ErrorResponse("Error to get campaigns", err)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	response := helper.ResponseWithData("List of campaigns", campaign.FormatCampaigns(campaigns))
+
+	if totalPages > 1 {
+		if currentPage < totalPages {
+			nextPage = currentPage + 1
+		} else {
+			nextPage = -1
+		}
+		if currentPage > 1 {
+			prevPage = currentPage - 1
+		} else {
+			prevPage = -1
+		}
+	}
+
+	response := helper.ResponseWithPaginationAndNextPrev("List of campaigns", campaign.FormatCampaigns(campaigns), currentPage, totalPages, nextPage, prevPage)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -76,7 +100,7 @@ func (h *campaignHandler) CreateCampaign(c *gin.Context) {
 		return
 	}
 
-	response := helper.ErrorResponse("Success creating campaign", campaign.FormatCampaign(newCampaign))
+	response := helper.ResponseWithData("Success creating campaign", campaign.FormatCampaign(newCampaign))
 	c.JSON(http.StatusOK, response)
 }
 
