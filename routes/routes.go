@@ -53,4 +53,5 @@ func SetupRoute(router *gin.Engine) {
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
 
 	api.GET("/users", middleware.AuthMiddleware(authService, userService), adminHandler.GetAllUsers)
+	api.GET("/users/transactions", middleware.AuthMiddleware(authService, userService), adminHandler.GetAllUsersTransactions)
 }
