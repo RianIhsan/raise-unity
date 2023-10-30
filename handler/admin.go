@@ -4,6 +4,7 @@ import (
 	"github.com/RianIhsan/raise-unity/admin"
 	"github.com/RianIhsan/raise-unity/auth"
 	"github.com/RianIhsan/raise-unity/helper"
+	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -64,5 +65,48 @@ func (h *adminHandler) GetAllUsers(c *gin.Context) {
 	}
 
 	response := helper.ResponseWithPaginationAndNextPrev("List of users", admin.FormatterUsers(nonAdminUsers), currentPage, totalPages, nextPage, prevPage)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *adminHandler) GetAllUsersTransactions(c *gin.Context) {
+	currentUser := c.MustGet("CurrentUser").(user.User)
+	if currentUser.Role != "admin" {
+		response := helper.GeneralResponse("Access denied")
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+
+	var transactions []transaction.Transaction
+	var totalPages, currentPage, nextPage, prevPage int
+	var err error
+
+	searchTransactionByUsername := c.Query("user_name")
+	if searchTransactionByUsername != "" {
+		transactions, err = h.service.SearchTransactionByUsername(searchTransactionByUsername)
+	} else {
+		transactions, totalPages, currentPage, nextPage, prevPage, err = h.service.GetTransactionsPagination(page, pageSize)
+	}
+	if err != nil {
+		response := helper.ErrorResponse("Error to get transactions", err)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if totalPages > 1 {
+		if currentPage < totalPages {
+			nextPage = currentPage + 1
+		} else {
+			nextPage = -1
+		}
+		if currentPage > 1 {
+			prevPage = currentPage - 1
+		} else {
+			prevPage = -1
+		}
+	}
+
+	response := helper.ResponseWithPaginationAndNextPrev("List of users", admin.FormatterTransactions(transactions), currentPage, totalPages, nextPage, prevPage)
 	c.JSON(http.StatusOK, response)
 }

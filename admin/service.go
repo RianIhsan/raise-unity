@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"math"
 )
@@ -8,6 +9,8 @@ import (
 type Service interface {
 	GetUsersPagination(page, pageSize int) ([]user.User, int, int, int, int, error)
 	SearchUserByName(name string) ([]user.User, error)
+	GetTransactionsPagination(page, pageSize int) ([]transaction.Transaction, int, int, int, int, error)
+	SearchTransactionByUsername(name string) ([]transaction.Transaction, error)
 }
 
 type service struct {
@@ -51,4 +54,39 @@ func (s *service) SearchUserByName(name string) ([]user.User, error) {
 		return userByName, err
 	}
 	return userByName, nil
+}
+
+func (s *service) GetTransactionsPagination(page, pageSize int) ([]transaction.Transaction, int, int, int, int, error) {
+	totalTransactions, err := s.repository.GetTotalTransactions()
+	if err != nil {
+		return nil, 0, 0, 0, 0, err
+	}
+	totalPages := int(math.Ceil(float64(totalTransactions) / float64(pageSize)))
+	if page < 1 {
+		page = 1
+	}
+	if page > totalPages {
+		page = totalPages
+	}
+	offset := (page - 1) * pageSize
+	transactions, err := s.repository.GetPaginatedTransactions(offset, pageSize)
+	if err != nil {
+		return nil, 0, 0, 0, 0, err
+	}
+	var nextPage, prevPage int
+	if page < totalPages {
+		nextPage = page + 1
+	}
+	if page > 1 {
+		prevPage = page - 1
+	}
+	return transactions, totalPages, page, nextPage, prevPage, nil
+}
+
+func (s *service) SearchTransactionByUsername(name string) ([]transaction.Transaction, error) {
+	userTransaction, err := s.repository.SearchTransactionByUsername(name)
+	if err != nil {
+		return userTransaction, err
+	}
+	return userTransaction, nil
 }

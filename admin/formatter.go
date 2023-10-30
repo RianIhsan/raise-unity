@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"time"
 )
@@ -39,4 +40,46 @@ func FormatterUsers(users []user.User) []UserFormatter {
 	}
 
 	return usersFormatter
+}
+
+type TransactionFormatter struct {
+	ID         int       `json:"id"`
+	UserID     int       `json:"user_id"`
+	CampaignID int       `json:"campaign_id"`
+	Amount     int       `json:"amount"`
+	Status     string    `json:"status"`
+	Code       string    `json:"code"`
+	PaymentURL string    `json:"payment_url"`
+	User       string    `json:"user"`
+	Campaign   string    `json:"campaign_name"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+func FormatTransaction(transaction transaction.Transaction) TransactionFormatter {
+	transactionFormatter := TransactionFormatter{}
+	transactionFormatter.ID = transaction.ID
+	transactionFormatter.UserID = transaction.UserID
+	transactionFormatter.CampaignID = transaction.CampaignID
+	transactionFormatter.Amount = transaction.Amount
+	transactionFormatter.Status = transaction.Status
+	transactionFormatter.Code = transaction.Code
+	transactionFormatter.PaymentURL = transaction.PaymentURL
+	transactionFormatter.User = transaction.User.Name
+	transactionFormatter.Campaign = transaction.Campaign.Name
+	transactionFormatter.CreatedAt = transaction.CreatedAt
+	transactionFormatter.UpdatedAt = transaction.UpdatedAt
+
+	return transactionFormatter
+}
+
+func FormatterTransactions(transaction []transaction.Transaction) []TransactionFormatter {
+	var transactionsFormatter []TransactionFormatter
+
+	for _, tr := range transaction {
+		formatTransaction := FormatTransaction(tr)
+		transactionsFormatter = append(transactionsFormatter, formatTransaction)
+	}
+
+	return transactionsFormatter
 }
