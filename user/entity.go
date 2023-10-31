@@ -15,13 +15,12 @@ type User struct {
 	IsVerified bool      `json:"is_verified" gorm:"default:false"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
-	//Campaigns  []campaign.Campaign `json:"campaigns" gorm:"foreignKey:UserID"`
 }
 
 type OTP struct {
 	ID         uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID     int       `json:"user_id" gorm:"index;unique"`
-	User       User      `json:"user" gorm:"foreignKey:UserID;references:ID"`
+	User       User      `json:"user" gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE"`
 	OTP        string    `json:"otp" gorm:"type:varchar(255)"`
 	ExpiredOTP int64     `json:"expired_otp" gorm:"type:bigint"`
 	CreatedAt  time.Time `json:"created_at"`

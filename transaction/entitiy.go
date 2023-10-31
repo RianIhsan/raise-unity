@@ -14,8 +14,8 @@ type Transaction struct {
 	Status     string            `json:"status"`
 	Code       string            `json:"code"`
 	PaymentURL string            `json:"payment_url" gorm:"type:varchar(255)"`
-	User       user.User         `json:"user"`
-	Campaign   campaign.Campaign `json:"campaign"`
+	User       user.User         `json:"user" gorm:"constraint:OnDelete:CASCADE,OnUpdate:CASCADE"`
+	Campaign   campaign.Campaign `json:"campaign" gorm:"constraint:OnDelete:CASCADE,OnUpdate:CASCADE"`
 	CreatedAt  time.Time         `json:"created_at"`
 	UpdatedAt  time.Time         `json:"updated_at"`
 }
