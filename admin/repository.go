@@ -14,6 +14,7 @@ type Repository interface {
 	GetPaginatedTransactions(offset, limit int) ([]transaction.Transaction, error)
 	SearchTransactionByUsername(name string) ([]transaction.Transaction, error)
 	GetTotalTransactionsByUsername(name string) (int64, error)
+	GetUserById(userId int) (user.User, error)
 }
 
 type repository struct {
@@ -88,4 +89,14 @@ func (r *repository) SearchTransactionByUsername(name string) ([]transaction.Tra
 		return userTransaction, err
 	}
 	return userTransaction, nil
+}
+
+func (r *repository) GetUserById(userId int) (user.User, error) {
+	var u user.User
+	err := r.db.Where("id = ?", userId).Delete(&u).Error
+	if err != nil {
+		return u, err
+	}
+
+	return u, nil
 }

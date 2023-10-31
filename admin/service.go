@@ -11,6 +11,7 @@ type Service interface {
 	SearchUserByName(name string) ([]user.User, error)
 	GetTransactionsPagination(page, pageSize int) ([]transaction.Transaction, int, int, int, int, error)
 	SearchTransactionByUsername(name string) ([]transaction.Transaction, error)
+	DeleteUserById(id int) (user.User, error)
 }
 
 type service struct {
@@ -89,4 +90,13 @@ func (s *service) SearchTransactionByUsername(name string) ([]transaction.Transa
 		return userTransaction, err
 	}
 	return userTransaction, nil
+}
+
+func (s *service) DeleteUserById(id int) (user.User, error) {
+	deleteUser, err := s.repository.GetUserById(id)
+	if err != nil {
+		return user.User{}, err
+	}
+
+	return deleteUser, nil
 }
