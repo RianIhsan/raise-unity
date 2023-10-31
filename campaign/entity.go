@@ -15,6 +15,7 @@ type Campaign struct {
 	BackerCount      int             `json:"backer_count"`
 	GoalAmount       int             `json:"goal_amount"`
 	CurrentAmount    int             `json:"current_amount"`
+	Status           string          `json:"status" gorm:"type:varchar(50)"`
 	CreatedAt        time.Time       `json:"created_at"`
 	UpdatedAt        time.Time       `json:"updated_at"`
 	CampaignImages   []CampaignImage `json:"campaign_images" gorm:"foreignKey:CampaignID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
