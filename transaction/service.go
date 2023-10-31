@@ -110,6 +110,9 @@ func (s *service) ProsesPayment(input TransactionNotifyInput) error {
 		campaign.BackerCount = campaign.BackerCount + 1
 		campaign.CurrentAmount = campaign.CurrentAmount + updatedTransaction.Amount
 
+		if campaign.CurrentAmount >= campaign.GoalAmount {
+			campaign.Status = "achieved"
+		}
 		_, err := s.campaignRepository.Update(campaign)
 		if err != nil {
 			return err
