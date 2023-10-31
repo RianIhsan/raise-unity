@@ -56,9 +56,7 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error) {
 	campaign.Perks = input.Perks
 	campaign.UserID = input.User.ID
 	campaign.Status = "unachieved"
-	if campaign.GoalAmount >= campaign.CurrentAmount {
-		campaign.Status = "achieved"
-	}
+
 	newCampaign, err := s.repository.Save(campaign)
 	if err != nil {
 		return newCampaign, err
