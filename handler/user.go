@@ -88,14 +88,14 @@ func (h *userHandler) VerifyEmail(c *gin.Context) {
 	var payload user.VerifyEmailPayload
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
-		response := helper.ErrorResponse("VerifyEmail failed", err)
+		response := helper.ErrorResponse("VerifyEmail failed", err.Error())
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
 	err := h.userService.VerifyEmail(payload.Email, payload.OTP)
 	if err != nil {
-		response := helper.ErrorResponse("VerifyEmail failed", err)
+		response := helper.ErrorResponse("VerifyEmail failed", err.Error())
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}

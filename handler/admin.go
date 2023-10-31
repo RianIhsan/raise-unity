@@ -41,7 +41,7 @@ func (h *adminHandler) GetAllUsers(c *gin.Context) {
 		users, totalPages, currentPage, nextPage, prevPage, err = h.service.GetUsersPagination(page, pageSize)
 	}
 	if err != nil {
-		response := helper.ErrorResponse("Error to get users", err)
+		response := helper.ErrorResponse("Error to get users", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -89,7 +89,7 @@ func (h *adminHandler) GetAllUsersTransactions(c *gin.Context) {
 		transactions, totalPages, currentPage, nextPage, prevPage, err = h.service.GetTransactionsPagination(page, pageSize)
 	}
 	if err != nil {
-		response := helper.ErrorResponse("Error to get transactions", err)
+		response := helper.ErrorResponse("Error to get transactions", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
