@@ -54,4 +54,5 @@ func SetupRoute(router *gin.Engine) {
 
 	api.GET("/users", middleware.AuthMiddleware(authService, userService), adminHandler.GetAllUsers)
 	api.GET("/users/transactions", middleware.AuthMiddleware(authService, userService), adminHandler.GetAllUsersTransactions)
+	api.DELETE("/users/:id", middleware.AuthMiddleware(authService, userService), adminHandler.DeleteUser)
 }

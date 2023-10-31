@@ -110,3 +110,28 @@ func (h *adminHandler) GetAllUsersTransactions(c *gin.Context) {
 	response := helper.ResponseWithPaginationAndNextPrev("List of users", admin.FormatterTransactions(transactions), currentPage, totalPages, nextPage, prevPage)
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *adminHandler) DeleteUser(c *gin.Context) {
+	currentUser := c.MustGet("CurrentUser").(user.User)
+	if currentUser.Role != "admin" {
+		response := helper.GeneralResponse("Access denied")
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	userId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response := helper.ErrorResponse("Failed get user", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	_, err = h.service.DeleteUserById(userId)
+	if err != nil {
+		response := helper.ErrorResponse("Failed delete user", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.GeneralResponse("Success Delete user")
+	c.JSON(http.StatusOK, response)
+}
