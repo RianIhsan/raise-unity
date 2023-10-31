@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"math"
@@ -12,6 +13,7 @@ type Service interface {
 	GetTransactionsPagination(page, pageSize int) ([]transaction.Transaction, int, int, int, int, error)
 	SearchTransactionByUsername(name string) ([]transaction.Transaction, error)
 	DeleteUserById(id int) (user.User, error)
+	DeleteCampaignById(id int) (campaign.Campaign, error)
 }
 
 type service struct {
@@ -99,4 +101,12 @@ func (s *service) DeleteUserById(id int) (user.User, error) {
 	}
 
 	return deleteUser, nil
+}
+
+func (s *service) DeleteCampaignById(id int) (campaign.Campaign, error) {
+	deleteCampaign, err := s.repository.GetCampaignById(id)
+	if err != nil {
+		return campaign.Campaign{}, err
+	}
+	return deleteCampaign, err
 }

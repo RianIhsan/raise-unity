@@ -135,3 +135,28 @@ func (h *adminHandler) DeleteUser(c *gin.Context) {
 	response := helper.GeneralResponse("Success Delete user")
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *adminHandler) DeleteCampaign(c *gin.Context) {
+	currentUser := c.MustGet("CurrentUser").(user.User)
+	if currentUser.Role != "admin" {
+		response := helper.GeneralResponse("Access denied")
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	campaignId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		response := helper.ErrorResponse("Failed get campaign", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	_, err = h.service.DeleteCampaignById(campaignId)
+	if err != nil {
+		response := helper.ErrorResponse("Failed delete campaign", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.GeneralResponse("Success Delete Campaign")
+	c.JSON(http.StatusOK, response)
+}

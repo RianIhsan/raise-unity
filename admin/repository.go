@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ type Repository interface {
 	SearchTransactionByUsername(name string) ([]transaction.Transaction, error)
 	GetTotalTransactionsByUsername(name string) (int64, error)
 	GetUserById(userId int) (user.User, error)
+	GetCampaignById(campaignId int) (campaign.Campaign, error)
 }
 
 type repository struct {
@@ -99,4 +101,14 @@ func (r *repository) GetUserById(userId int) (user.User, error) {
 	}
 
 	return u, nil
+}
+
+func (r *repository) GetCampaignById(campaignId int) (campaign.Campaign, error) {
+	var c campaign.Campaign
+	err := r.db.Where("id = ?", campaignId).Delete(&c).Error
+	if err != nil {
+		return c, err
+	}
+
+	return c, nil
 }
