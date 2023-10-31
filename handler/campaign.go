@@ -40,7 +40,7 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	}
 
 	if err != nil {
-		response := helper.ErrorResponse("Error to get campaigns", err)
+		response := helper.ErrorResponse("Error to get campaigns", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -67,14 +67,14 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	var input campaign.GetCampaignDetailInput
 	err := c.ShouldBindUri(&input)
 	if err != nil {
-		response := helper.ErrorResponse("Failed to get campaign 1", err)
+		response := helper.ErrorResponse("Failed to get campaign", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	campaignDetails, err := h.service.FindCampaignByID(input)
 	if err != nil {
-		response := helper.ErrorResponse("Failed to get campaign 2", err)
+		response := helper.ErrorResponse("Failed to get campaign", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -99,7 +99,7 @@ func (h *campaignHandler) CreateCampaign(c *gin.Context) {
 
 	newCampaign, err := h.service.CreateCampaign(input)
 	if err != nil {
-		response := helper.ErrorResponse("Failed create campaign", err)
+		response := helper.ErrorResponse("Failed create campaign", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -112,7 +112,7 @@ func (h *campaignHandler) UpdateCampaign(c *gin.Context) {
 	var input campaign.GetCampaignDetailInput
 	err := c.ShouldBindUri(&input)
 	if err != nil {
-		response := helper.ErrorResponse("Failed to update campaign", err)
+		response := helper.ErrorResponse("Failed to update campaign", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
