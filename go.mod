@@ -6,7 +6,7 @@ require (
 	github.com/alexedwards/argon2id v0.0.0-20230305115115-4b3c3280a736
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/joho/godotenv v1.5.1
-	github.com/midtrans/midtrans-go v1.3.7
+	github.com/stretchr/testify v1.8.4
 	github.com/veritrans/go-midtrans v0.0.0-20210616100512-16326c5eeb00
 	github.com/wneessen/go-mail v0.4.0
 )
@@ -14,9 +14,12 @@ require (
 require (
 	github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927 // indirect
 	github.com/creasty/defaults v1.5.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
