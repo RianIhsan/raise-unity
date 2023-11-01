@@ -47,12 +47,13 @@ RaiseUnity adalah platform crowdfunding yang saya ciptakan untuk menggalang dana
 - Password Hash : **[Argon2id](https://github.com/alexedwards/argon2id)**
 - Testing : **[Testify](https://github.com/stretchr/testify)**
 - Payment gateway : **[Midtrans](https://midtrans.com)**
-- Mail Sender : **[Go-mail](github.com/wneessen/go-mail)**
+- Mail Sender : **[Go-mail](https://github.com/wneessen/go-mail)**
 - API Documentation : **[Postman](https://www.postman.com)**
 
 ### Documentation
 - API SPEC : **[API-Spec](https://documenter.getpostman.com/view/26712635/2s9YXcdQMa)**
-- ERD : **[RaiseUnity-ERD](![ERD-RaiseUnity.jpg](..%2F..%2F..%2F..%2FDownloads%2FERD-RaiseUnity.jpg))**
+- ERD : **RaiseUnity-ERD ![ERD-RaiseUnity](https://github.com/RianIhsan/raise-unity/assets/93025581/11c6742b-d7a5-41c9-bbd5-478c203dd359)**
+
 
 ### Contact
 - Instagram : **[_imriann28](https://www.instagram.com/_imriann28)**
