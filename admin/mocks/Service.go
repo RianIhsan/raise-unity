@@ -64,6 +64,54 @@ func (_m *Service) DeleteUserById(id int) (user.User, error) {
 	return r0, r1
 }
 
+// FindCampaignById provides a mock function with given fields: id
+func (_m *Service) FindCampaignById(id int) (campaign.Campaign, error) {
+	ret := _m.Called(id)
+
+	var r0 campaign.Campaign
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int) (campaign.Campaign, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(int) campaign.Campaign); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(campaign.Campaign)
+	}
+
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindUserById provides a mock function with given fields: id
+func (_m *Service) FindUserById(id int) (user.User, error) {
+	ret := _m.Called(id)
+
+	var r0 user.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int) (user.User, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(int) user.User); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(user.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetTransactionsPagination provides a mock function with given fields: page, pageSize
 func (_m *Service) GetTransactionsPagination(page int, pageSize int) ([]transaction.Transaction, int, int, int, int, error) {
 	ret := _m.Called(page, pageSize)

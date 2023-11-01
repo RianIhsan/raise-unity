@@ -414,6 +414,7 @@ func TestDeleteUserById(t *testing.T) {
 		result, err := service.DeleteUserById(user.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, user.ID, result.ID)
+		repository.AssertExpectations(t)
 
 	})
 
@@ -423,6 +424,8 @@ func TestDeleteUserById(t *testing.T) {
 		_, err := service.DeleteUserById(user.ID)
 		assert.Error(t, err)
 		assert.Equal(t, "User not found", err.Error())
+		repository.AssertExpectations(t)
+
 	})
 }
 
@@ -479,5 +482,103 @@ func TestDeleteCampaignId(t *testing.T) {
 		_, err := service.DeleteCampaignById(MockCampaign.ID)
 		assert.Error(t, err)
 		assert.Equal(t, "Campaign not found", err.Error())
+		repository.AssertExpectations(t)
+
 	})
+}
+
+func TestFindUserById(t *testing.T) {
+	var repository = mocks.NewRepository(t)
+	var service = NewService(repository)
+
+	mockUser := user.User{
+		ID:         1,
+		Name:       "Rian",
+		Occupation: "programmer",
+		Email:      "rianganteng@gmail.com",
+		Password:   "rian12345",
+		Avatar:     "www.cloudinary.com/avatar",
+		Role:       "user",
+		IsVerified: true,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	t.Run("Success get user id", func(t *testing.T) {
+		repository.On("FindUserById", mockUser.ID).Return(mockUser, nil).Once()
+		result, err := service.FindUserById(mockUser.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, mockUser.ID, result.ID)
+		repository.AssertExpectations(t)
+
+	})
+
+	t.Run("Failed get user id", func(t *testing.T) {
+		repository.On("FindUserById", mockUser.ID).Return(mockUser, errors.New("no user found with that ID")).Once()
+		_, err := service.FindUserById(mockUser.ID)
+		assert.Error(t, err)
+		assert.Equal(t, 1, mockUser.ID, "no user found with that ID")
+		repository.AssertExpectations(t)
+	})
+
+}
+
+func TestFindCampaignById(t *testing.T) {
+	var repository = mocks.NewRepository(t)
+	var service = NewService(repository)
+
+	mockCampaign := campaign.Campaign{
+		ID:               1,
+		UserID:           1,
+		Name:             "Sample Campaign",
+		ShortDescription: "A short description",
+		Description:      "A long description",
+		Perks:            "Perks for backers",
+		BackerCount:      100,
+		GoalAmount:       10000,
+		CurrentAmount:    5000,
+		Status:           "active",
+		CreatedAt:        time.Now(),
+		UpdatedAt:        time.Now(),
+		CampaignImages: []campaign.CampaignImage{
+			{
+				ID:         1,
+				CampaignID: 1,
+				IsPrimary:  1,
+				FileName:   "gambar.png",
+				CreatedAt:  time.Now(),
+				UpdatedAt:  time.Now(),
+			},
+		},
+		User: user.User{
+			ID:         1,
+			Name:       "Rian",
+			Occupation: "programmer",
+			Email:      "rianganteng@gmail.com",
+			Password:   "rian12345",
+			Avatar:     "www.cloudinary.com/avatar",
+			Role:       "user",
+			IsVerified: true,
+			CreatedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
+		},
+	}
+
+	t.Run("Success get campaign id", func(t *testing.T) {
+		repository.On("FindCampaignById", mockCampaign.ID).Return(mockCampaign, nil).Once()
+		result, err := service.FindCampaignById(mockCampaign.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, mockCampaign.ID, result.ID)
+		repository.AssertExpectations(t)
+
+	})
+
+	t.Run("Failed get campaign id", func(t *testing.T) {
+		repository.On("FindCampaignById", mockCampaign.ID).Return(mockCampaign, errors.New("no campaign found with that id")).Once()
+		_, err := service.FindCampaignById(mockCampaign.ID)
+		assert.Error(t, err)
+		assert.Equal(t, 1, mockCampaign.ID, "no campaign found with that id")
+		repository.AssertExpectations(t)
+	})
+
 }

@@ -17,6 +17,8 @@ type Repository interface {
 	GetTotalTransactionsByUsername(name string) (int64, error)
 	GetUserById(userId int) (user.User, error)
 	GetCampaignById(campaignId int) (campaign.Campaign, error)
+	FindUserById(userId int) (user.User, error)
+	FindCampaignById(id int) (campaign.Campaign, error)
 }
 
 type repository struct {
@@ -103,9 +105,28 @@ func (r *repository) GetUserById(userId int) (user.User, error) {
 	return u, nil
 }
 
+func (r *repository) FindUserById(ID int) (user.User, error) {
+	var u user.User
+	err := r.db.Where("id = ?", ID).Find(&u).Error
+	if err != nil {
+		return u, err
+	}
+	return u, err
+}
+
 func (r *repository) GetCampaignById(campaignId int) (campaign.Campaign, error) {
 	var c campaign.Campaign
 	err := r.db.Where("id = ?", campaignId).Delete(&c).Error
+	if err != nil {
+		return c, err
+	}
+
+	return c, nil
+}
+
+func (r *repository) FindCampaignById(id int) (campaign.Campaign, error) {
+	var c campaign.Campaign
+	err := r.db.Where("id = ?", id).Find(&c).Error
 	if err != nil {
 		return c, err
 	}

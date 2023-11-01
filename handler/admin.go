@@ -124,15 +124,21 @@ func (h *adminHandler) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+	user, err := h.service.FindUserById(userId)
+	if err != nil {
+		response := helper.ErrorResponse("Failed get user", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 
-	_, err = h.service.DeleteUserById(userId)
+	_, err = h.service.DeleteUserById(user.ID)
 	if err != nil {
 		response := helper.ErrorResponse("Failed delete user", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	response := helper.GeneralResponse("Success Delete user")
+	response := helper.SuccesResponse("Success Delete user")
 	c.JSON(http.StatusOK, response)
 }
 
@@ -143,14 +149,21 @@ func (h *adminHandler) DeleteCampaign(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	campaignId, err := strconv.Atoi(c.Param("id"))
+	campaign, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		response := helper.ErrorResponse("Failed get campaign", err.Error())
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	_, err = h.service.DeleteCampaignById(campaignId)
+	campaignId, err := h.service.FindCampaignById(campaign)
+	if err != nil {
+		response := helper.ErrorResponse("Failed get campaign", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	_, err = h.service.DeleteCampaignById(campaignId.ID)
 	if err != nil {
 		response := helper.ErrorResponse("Failed delete campaign", err.Error())
 		c.JSON(http.StatusBadRequest, response)
