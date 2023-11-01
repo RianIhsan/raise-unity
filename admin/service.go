@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"errors"
 	"github.com/RianIhsan/raise-unity/campaign"
 	"github.com/RianIhsan/raise-unity/transaction"
 	"github.com/RianIhsan/raise-unity/user"
@@ -14,6 +15,8 @@ type Service interface {
 	SearchTransactionByUsername(name string) ([]transaction.Transaction, error)
 	DeleteUserById(id int) (user.User, error)
 	DeleteCampaignById(id int) (campaign.Campaign, error)
+	FindUserById(id int) (user.User, error)
+	FindCampaignById(id int) (campaign.Campaign, error)
 }
 
 type service struct {
@@ -94,6 +97,18 @@ func (s *service) SearchTransactionByUsername(name string) ([]transaction.Transa
 	return userTransaction, nil
 }
 
+func (s *service) FindUserById(id int) (user.User, error) {
+	user, err := s.repository.FindUserById(id)
+	if err != nil {
+		return user, err
+	}
+	if user.ID == 0 {
+		return user, errors.New("no user found with that ID")
+	}
+
+	return user, err
+}
+
 func (s *service) DeleteUserById(id int) (user.User, error) {
 	deleteUser, err := s.repository.GetUserById(id)
 	if err != nil {
@@ -109,4 +124,15 @@ func (s *service) DeleteCampaignById(id int) (campaign.Campaign, error) {
 		return campaign.Campaign{}, err
 	}
 	return deleteCampaign, err
+}
+
+func (s *service) FindCampaignById(id int) (campaign.Campaign, error) {
+	campaign, err := s.repository.FindCampaignById(id)
+	if err != nil {
+		return campaign, err
+	}
+	if campaign.ID == 0 {
+		return campaign, errors.New("no campaign found with that id")
+	}
+	return campaign, nil
 }
