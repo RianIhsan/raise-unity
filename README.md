@@ -1,4 +1,7 @@
-# ![Screenshot from 2023-10-27 18-36-59.png](..%2F..%2F..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-10-27%2018-36-59.png)Raise Unity API | Mini Project - Alterra Academy
+![Screenshot from 2023-10-27 18-36-59](https://github.com/RianIhsan/raise-unity/assets/93025581/c3658c13-fcae-4954-8770-f71169cb17a2)
+
+# Raise Unity API | Mini Project - Alterra Academy
+
 
 RaiseUnity adalah platform crowdfunding yang saya ciptakan untuk menggalang dana dan menyatukan semua orang dalam usaha bersama. Saya percaya bahwa bersama-sama kita dapat mencapai lebih banyak, dan itulah mengapa moto saya adalah "ALL FOR ONE." Di RaiseUnity, saya memungkinkan individu, kelompok, dan organisasi untuk mengumpulkan dana dari banyak kontributor dengan tujuan mencapai berbagai proyek dan tujuan yang bermakna.
 
