@@ -274,42 +274,33 @@ func TestResendOTP(t *testing.T) {
 	})
 
 	t.Run("Invalid email", func(t *testing.T) {
-		// Set up the mock repository
 		repository.On("FindByEmail", testEmail).Return(user.User{ID: 1}, errors.New("no user found with that email")).Once()
 
-		// Call the `ResendOTP` function
 		_, err := service.ResendOTP(testEmail)
 
-		// Assert the results
 		assert.Equal(t, "no user found with that email", err.Error())
 		repository.AssertExpectations(t)
 	})
 
 	t.Run("Failed to delete user OTP", func(t *testing.T) {
-		// Set up the mock repository
 
 		repository.On("FindByEmail", testEmail).Return(user.User{ID: 1}, nil).Once()
 		repository.On("DeleteUserOTP", 1).Return(nil, errors.New("failed to delete user OTP")).Once()
 		repository.On("SaveOTP", mock.AnythingOfType("user.OTP")).Return(user.OTP{ID: 1}, errors.New("error")).Once()
 
-		// Call the `ResendOTP` function
 		_, err := service.ResendOTP(testEmail)
 
-		// Assert the results
 		assert.EqualError(t, err, "error")
 		repository.AssertExpectations(t)
 	})
 
 	t.Run("Failed to save OTP", func(t *testing.T) {
-		// Set up the mock repository
 		repository.On("FindByEmail", testEmail).Return(user.User{ID: 1}, nil).Once()
 		repository.On("DeleteUserOTP", 1).Return(nil).Once()
 		repository.On("SaveOTP", mock.AnythingOfType("user.OTP")).Return(user.OTP{ID: 1}, errors.New("failed to save OTP")).Once()
 
-		// Call the `ResendOTP` function
 		_, err := service.ResendOTP(testEmail)
 
-		// Assert the results
 		assert.EqualError(t, err, "failed to save OTP")
 		repository.AssertExpectations(t)
 	})
