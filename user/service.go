@@ -164,7 +164,6 @@ func (s *service) ResendOTP(email string) (OTP, error) {
 		return OTP{}, errors.New("no user found with that email")
 	}
 
-	// Hapus OTP sebelumnya
 	errDel := s.repository.DeleteUserOTP(user.ID)
 	if errDel != nil {
 		return OTP{}, errDel
